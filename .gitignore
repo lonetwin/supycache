@@ -55,3 +55,8 @@ docs/_build/
 
 # PyBuilder
 target/
+
+# local
+lib64
+include
+bin
