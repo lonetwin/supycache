@@ -28,8 +28,8 @@ However, you might want to be aware of the arguments that are passed to the func
 
 ```python
 
-@supycache(cache_key='result')   # Cache the sum of x and y *independent* the values of x and y
-def cached_sum(x, y):
+@supycache(cache_key='result')   # Cache the sum of x and y *independent* the
+def cached_sum(x, y):            # values of x and y
     return x + y
 
 print cached_sum(1, 1)    # prints ...ehe, lets see ...umm, 2 ?
@@ -44,8 +44,8 @@ So, caching needs to be aware of the arguments passed to the function, so you do
 
 ```python
 
-@supycache(cache_key='{0} and {1}')   # build the cache key dependent on the positional args
-def cached_sum(x, y):
+@supycache(cache_key='{0} and {1}')   # build the cache key dependent on the
+def cached_sum(x, y):                 # positional args
     return x + y
 ```
 
