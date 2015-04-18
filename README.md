@@ -2,7 +2,7 @@
 Simple yet capable caching decorator for python
 
 ## what is supycache ?
-supycache is a decorator that automates caching of return values for expensive functions, either in memory or on a cache server such as [`memcached`] or [`redis`]. The cache keys can either be _indedependent_ or dependent (completely or _partially_) on the arguments passed to the function.
+supycache is a decorator that automates caching of return values for expensive functions, either in memory or on a cache server such as [`memcached`] or [`redis`]. The cache keys can either be _indedependent_ or dependent (completely or _partially_) of the arguments passed to the function.
 
 This is **different** from other similar caching decorators, for instance, [`functools.lru_cache`](https://docs.python.org/3/library/functools.html#functools.lru_cache) which is dependent on all the arguments passed to the function and requires the arguments to be hashable.
 
