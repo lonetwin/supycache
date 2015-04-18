@@ -2,9 +2,9 @@
 Simple yet capable caching decorator for python
 
 ## what is supycache ?
-supycache is a decorator that automates the caching of the return values of expensive functions, either in memory or on a cache server such as [`memcached`] or [`redis`].
+supycache is a decorator that automates caching of return values for expensive functions, either in memory or on a cache server such as [`memcached`] or [`redis`]. The cache keys can either be _indedependent_ or dependent (completely or _partially_) on the arguments passed to the function.
 
-Additionally, it provides a way to ensure that the return values are cached either _independently_, _partially dependent_ or _completely dependent_ on the arguments/keyword arguments passed to the function. This is different from other similar caching decorators, for instance, [`functools.lru_cache`](https://docs.python.org/3/library/functools.html#functools.lru_cache) which is *wholly* dependent on all the arguments passed to the function and require that the arguments are hashable.
+This is **different** from other similar caching decorators, for instance, [`functools.lru_cache`](https://docs.python.org/3/library/functools.html#functools.lru_cache) which is dependent on all the arguments passed to the function and requires the arguments to be hashable.
 
 Here's an example of how you might use `supycache`
 ```python
@@ -40,7 +40,7 @@ print supycache.default_backend.get('result')  # prints 2
 2
 ```
 
-So then you do:
+So, caching needs to be aware of the arguments passed to the function, so you do:
 
 ```python
 
@@ -49,7 +49,7 @@ def cached_sum(x, y):
     return x + y
 ```
 
-If that format specification for the `cache_key` looks familiar, you've discovered the _*secret*_ of supycache !
+If that format specification for the `cache_key` looks familiar, you've discovered the _secret_ of supycache !
 
 ```python
 
@@ -61,7 +61,7 @@ def custom_key_built_from_args(positional, kw=None, obj=None):
     return 'cached'
 ```
 
-The _*secret*_ of supycache is quite simple -- it calls `.format()` on the `cache_key/expire_key` with the passed `args` and `kwargs` to build the actual key. Additionaly the `backend` interface is abstarcted out neatly so that backends can be swapped out without too much hassle ...and yeah, the decorator accepts more than just `cache_key`.
+The _secret_ of supycache is quite simple -- it calls `.format()` on the `cache_key/expire_key` with the passed `args` and `kwargs` to build the actual key. Additionaly the `backend` interface is abstarcted out neatly so that backends can be swapped out without too much hassle ...and yeah, the decorator accepts more than just `cache_key`.
 
 Right now though, this project has only the code and tests, no docs (or even docstrings !). I'll be adding them soon. If interested take a look at the tests to see the typical usage and try it out. Feedback, bug reports and pull requests would be great !
 
