@@ -28,25 +28,52 @@ However, you might want to be aware of the arguments that are passed to the func
 
 ```python
 
-@supycache(cache_key='result')   # Cache the sum of x and y *independent* the
-def cached_sum(x, y):            # values of x and y
+@supycache(cache_key='sum_of_{0}_and_{1}')   # Cache the sum of x and y creating a
+def cached_sum(x, y):                        # key based on the arguments passed
     return x + y
-
-print cached_sum(1, 1)    # prints ...ehe, lets see ...umm, 2 ?
-2
-print cached_sum(1, 2)    # prints 2 again ! something's not right
-2
-print supycache.default_backend.get('result')  # prints 2
-2
 ```
 
-So, caching needs to be aware of the arguments passed to the function, so you do:
+You can also create the key based on **partial arguments** or on the `attributes`/`items` within the arguments.
 
 ```python
 
-@supycache(cache_key='{0} and {1}')   # build the cache key dependent on the
-def cached_sum(x, y):                 # positional args
-    return x + y
+class User:
+    def __init__(self, name, session_key):
+        self.name = name
+        self.session_key = session_key
+
+@supycache(cache_key='{user_obj.name}')   # build the cache key dependent on *just*
+def get_username(user_obj):               # the `.name` attribute
+    time.sleep(15)
+    return user_obj.name
+
+a = User(name='steve', session_key='0123456789')
+b = User(name='steve', session_key='9876543210')
+
+print get_username(user_obj=a)   # This will take 15 seconds to execute ...
+steve
+print get_username(user_obj=a)   # ...not this tho'...
+steve
+print get_username(user_obj=b)   # ...and neither will this !
+
+
+@supycache(cache_key='{choices[0]}_{menu[lunch]}')         # build the cache
+def supersized_lunch(ignored, choices=None, menu=None):    # key dependent on
+    time.sleep(15)                                         # partial arguments
+    return 'You get a %s %s' % (choices[-1], menu['lunch'])
+
+menu = {'breakfast' : 'eggs',
+        'lunch'     : 'pizza',
+        'dinner'    : 'steak'}
+
+sizes = ['small', 'medium', 'large', 'supersize']
+
+print supersized_lunch('ignored', choices=sizes, menu=menu)
+You get a supersize pizza       # This will take 15 seconds to execute ...
+
+print supersized_lunch('changed', choices=sizes, menu=menu)
+You get a supersize pizza       # ...not this tho'...
+
 ```
 
 If that format specification for the `cache_key` looks familiar, you've discovered the _secret_ of supycache !
