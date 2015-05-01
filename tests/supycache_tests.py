@@ -4,13 +4,13 @@
 import unittest
 import supycache
 
-
 class TestDictCache(unittest.TestCase):
     """ Test the DictCache backend
     """
 
     def setUp(self):
-        self.cache = supycache.DictCache()
+        from supycache.backends import DictCache
+        self.cache = DictCache()
 
     def tearDown(self):
         self.cache.clear()
@@ -36,11 +36,67 @@ class TestCacheDecorators(unittest.TestCase):
     """
 
     def setUp(self):
-        self.backend = supycache.DictCache()
+        from supycache.backends import DictCache
+        self.backend = DictCache()
         supycache.default_backend = self.backend
 
     def tearDown(self):
         self.backend.clear()
+
+    def test_missing_options(self):
+        """ missing option
+        """
+        with self.assertRaises(KeyError) as context:
+            @supycache.supycache()
+            def simple_function():
+                return 'dummy'
+
+        self.assertTrue('expecting one of' in context.exception.message)
+
+    def test_unconnected_backend(self):
+        """ unconnected backend
+        """
+        from supycache.cdf import CacheDecoratorFactory
+        supycache.default_backend = None # override setUp()
+        cdf = CacheDecoratorFactory(backend=None, cache_key='simple_key',
+                ignore_errors=False)
+
+        with self.assertRaises(AttributeError) as context:
+            cdf(lambda _: None)('dummy')
+
+        self.assertTrue("'NoneType' object has no attribute 'connect'" in
+                context.exception.message)
+
+    def test_do_not_ignore_errors(self):
+        """ do not ignore errors
+        """
+        from supycache.backends import DictCache
+
+        class DummyBackend:
+            def set(self, key, result):
+                raise Exception
+
+        supycache.default_backend = DummyBackend() # override setUp()
+        @supycache.supycache(cache_key='simple_key', ignore_errors=False)
+        def simple_setter():
+            return 'simple_value'
+
+        @supycache.supycache(expire_key='simple_key', ignore_errors=False)
+        def simple_deleter():
+            return 'simple_value'
+
+        with self.assertRaises(AttributeError) as context:
+            simple_setter()
+
+        with self.assertRaises(AttributeError) as context:
+            simple_deleter()
+
+        self.assertTrue("has no attribute" in
+                context.exception.message, context.exception.message)
+
+        with self.assertRaises(Exception) as context:
+            simple_setter()
+
 
     def test_decorator_for_cache_key_cache_miss(self):
         """ caching a simple key on a cache miss
@@ -201,8 +257,8 @@ class TestCacheDecorators(unittest.TestCase):
 
         simple_expiry()
         self.assertFalse(bool(self.backend.get('simple_key')))
- 
- 
+
+
     def test_decorator_for_expire_key_with_non_cached_key(self):
         """ expire a simple key with does not exist in cache
         """

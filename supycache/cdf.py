@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 from functools import wraps
 
+from . import get_default_backend
 
 class CacheDecoratorFactory:
     def __init__(self, backend, cache_key='', expire_key='', **other_kwargs):
@@ -24,7 +25,8 @@ class CacheDecoratorFactory:
     @property
     def backend(self):
         if not self._backend:
-            self._backend.connect(**self.options)
+            self._backend = get_default_backend()
+            self._backend.connect(**self._options)
         return self._backend
 
     def _expiry_wrapper(self, func):

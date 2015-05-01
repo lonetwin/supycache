@@ -1,27 +1,25 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-from functools import wraps
+
+default_backend = None
+
+def get_default_backend():
+    return DictCache if default_backend is None else default_backend
+
 from .backends import DictCache
 from .cdf import CacheDecoratorFactory
 
-default_backend = DictCache()
-
-
 def supycache(**options):
     def prepare_inner(function):
-        @wraps(function)
-        def inner(*args, **kwargs):
-            return function(*args, **kwargs)
+        recognized_options = {'cache_key',
+                              'expire_key',
+                              'key_creator',
+                              }
 
-        backend = options.pop('backend', default_backend)
-        backend.connect(**options)
+        if recognized_options.isdisjoint(options):
+            raise KeyError('expecting one of %s as an argument' % \
+                ','.join(recognized_options))
 
-        if options.get('cache_key') or options.get('expire_key'):
-            cdf = CacheDecoratorFactory(backend, **options)
-            wrapper = cdf(function)
-        else:
-            raise KeyError('supycache expects at least either '
-                           '`cache_key` or `expire_key`')
-
-        return wrapper
+        cdf = CacheDecoratorFactory(default_backend, **options)
+        return cdf(function)
     return prepare_inner

@@ -3,7 +3,7 @@
 from collections import defaultdict
 
 
-class BaseCache(object):
+class BaseCache(object): # pragma: no cover
     def __init__(self, config=None):
         self.config = config
 
