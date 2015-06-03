@@ -53,19 +53,6 @@ class TestCacheDecorators(unittest.TestCase):
 
         self.assertTrue('expecting one of' in context.exception.message)
 
-    def test_unconnected_backend(self):
-        """ unconnected backend
-        """
-        from supycache.cdf import CacheDecoratorFactory
-        supycache.default_backend = None # override setUp()
-        cdf = CacheDecoratorFactory(backend=None, cache_key='simple_key',
-                ignore_errors=False)
-
-        with self.assertRaises(AttributeError) as context:
-            cdf(lambda _: None)('dummy')
-
-        self.assertTrue("'NoneType' object has no attribute 'connect'" in
-                context.exception.message)
 
     def test_do_not_ignore_errors(self):
         """ do not ignore errors

@@ -55,6 +55,7 @@ steve
 print get_username(user_obj=a)   # ...not this tho'...
 steve
 print get_username(user_obj=b)   # ...and neither will this !
+steve
 
 
 @supycache(cache_key='{choices[0]}_{menu[lunch]}')         # build the cache
@@ -90,7 +91,11 @@ def custom_key_built_from_args(positional, kw=None, obj=None):
 
 The _secret_ of supycache is quite simple -- it calls `.format()` on the `cache_key/expire_key` with the passed `args` and `kwargs` to build the actual key. Additionaly the `backend` interface is abstarcted out neatly so that backends can be swapped out without too much hassle ...and yeah, the decorator accepts more than just `cache_key`.
 
-Right now though, this project has only the code and tests, no docs (or even docstrings !). I'll be adding them soon. If interested take a look at the tests to see the typical usage and try it out. Feedback, bug reports and pull requests would be great !
+Right now though, this project has only the code and tests, no docs (barring a couple of docstrings !). I'll be adding them soon. If interested take a look at the tests to see the typical usage and try it out. Feedback, bug reports and pull requests would be great !
+
+## Help required
+
+I would really appreciate any help you could offer in packaging this up for distribution via pypi. I've not distributed any packages before and have yet to read up on the process.
 
 [`memcached`]: http://memcached.org/
 [`redis`]: http://redis.io/

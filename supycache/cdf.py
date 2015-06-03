@@ -2,8 +2,6 @@
 # -*- coding: utf-8 -*-
 from functools import wraps
 
-from . import get_default_backend
-
 class CacheDecoratorFactory:
     def __init__(self, backend, cache_key='', expire_key='', **other_kwargs):
         self._backend = backend
@@ -22,19 +20,12 @@ class CacheDecoratorFactory:
     def __call__(self, func):
         return self._wrapped(func)
 
-    @property
-    def backend(self):
-        if not self._backend:
-            self._backend = get_default_backend()
-            self._backend.connect(**self._options)
-        return self._backend
-
     def _expiry_wrapper(self, func):
         @wraps(func)
         def cache_deleter(*args, **kwargs):
-            key = self.key.format(*args, **kwargs)
+            key = self.key(*args, **kwargs) if callable(self.key) else self.key.format(*args, **kwargs)
             try:
-                self.backend.delete(key)
+                self._backend.delete(key)
             except:
                 if not self.ignore_errors:
                     raise
@@ -46,9 +37,9 @@ class CacheDecoratorFactory:
         @wraps(func)
         def cache_setter(*args, **kwargs):
             result = None
-            key = self.key.format(*args, **kwargs)
+            key = self.key(*args, **kwargs) if callable(self.key) else self.key.format(*args, **kwargs)
             try:
-                result = self.backend.get(key)
+                result = self._backend.get(key)
             except:
                 if not self.ignore_errors:
                     raise
@@ -56,7 +47,7 @@ class CacheDecoratorFactory:
             if not result:
                 result = func(*args, **kwargs)
                 try:
-                    self.backend.set(key, result)
+                    self._backend.set(key, result)
                 except:
                     if not self.ignore_errors:
                         raise
