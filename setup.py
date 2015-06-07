@@ -18,7 +18,7 @@ with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
 
 setup(
     name = 'supycache',
-    version = '0.1',
+    version = '0.2.0',
     description = 'Simple yet capable caching decorator for python',
     long_description = long_description,
     url = 'https://github.com/lonetwin/supycache',

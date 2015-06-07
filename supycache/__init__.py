@@ -9,6 +9,7 @@ https://supycache.readthedocs.org/en/latest/
 
 __author__ = "Steven Fernandez <steve@lonetwin.net>"
 __license__ = "MIT"
+__version__ = '0.1.1'
 
 from functools import wraps
 
