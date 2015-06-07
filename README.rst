@@ -121,6 +121,15 @@ out. Feedback, bug reports and pull requests would be great !
 Help required
 -------------
 
-I would really appreciate any help you could offer in packaging this up
-for distribution via pypi. I've not distributed any packages before and
-have yet to read up on the process.
+I would really appreciate any help you could offer in validating the packaging
+and distribution of this module via pypi since I've not distributed any
+packages before.
+
+Besides that I plan on adding a few more things:
+
+    * Ability to specify a ``max_age`` for the cache key.
+    * I'm not sure not the packaging for the dependency would work, but I'd
+      like to automatically include the support for ``memcached`` or ``redis``
+      backends if the python memcached or redis modules are installed.
+    * logging support
+
