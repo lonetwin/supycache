@@ -1,8 +1,11 @@
 supycache
 =========
 
-Simple yet capable caching decorator for python Source code:
-https://github.com/lonetwin/supycache
+Simple yet capable caching decorator for python
+
+Source code: https://github.com/lonetwin/supycache
+
+Install using pip: ``pip install supycache`` or download from https://pypi.python.org/pypi/supycache
 
 What is supycache ?
 -------------------
