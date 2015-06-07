@@ -111,10 +111,36 @@ you've discovered the *secret* of supycache !
 
 The *secret* of supycache is quite simple -- it calls ``.format()`` on
 the ``cache_key/expire_key`` with the passed ``args`` and ``kwargs`` to
-build the actual key. Additionaly the ``backend`` interface is
-abstarcted out neatly so that backends can be swapped out without too
-much hassle ...and yeah, the decorator accepts more than just
-``cache_key``.
+build the actual key.
+
+However, if you'd like to have more control on the way the
+``cache_key/expire_key`` are created, simply pass in a callable !
+
+.. code:: python
+
+    def extract_path(url=None, *args, **kwags):
+        return urlparse.urlparse(url).path
+
+    @supycache(cache_key=extract_path, ignore_errors=False)
+    def do_something_with(url):
+        # will call `extract_path` at runtime passing `url` as parameter and
+        # will use the returned value as the cache key. Also, don't ignore any
+        # errors in the entire process if something fails (the default is to
+        # ignore any caching errors and just return the result as tho' this
+        # function was undecorated.
+        return 'cached'
+
+    do_something_with('http://www.example.com/foo/bar')
+    'cached'
+    supycache.default_backend.get('/foo/bar')
+    'cached'
+
+
+The ``backend`` interface is abstarcted out neatly so that backends can be
+swapped out without too much hassle. As long as the passed in object has a
+``get()``, ``set()`` and ``delete()`` methods, it can be passed to
+``supycache`` as a backend or can be set as the ``default_backend``
+
 
 Right now though, this project has only the code and tests, no docs
 (barring a couple of docstrings !). I'll be adding them soon. If

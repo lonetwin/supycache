@@ -25,7 +25,10 @@ def get_default_backend():
     (caching) object that has at least the `.get()``, ``.set()`` and
     ``.delete()`` methods.
     """
-    return default_backend if default_backend else DictCache()
+    global default_backend
+    if not default_backend:
+        default_backend = DictCache()
+    return default_backend
 
 def supycache(**options):
     """Decorates a function for caching/expiring cache depending on arguments.
@@ -61,6 +64,6 @@ def supycache(**options):
             raise KeyError('expecting one of %s as an argument' % \
                 ','.join(recognized_options))
 
-        cdf = CacheDecoratorFactory(default_backend, **options)
+        cdf = CacheDecoratorFactory(options.get('backend', get_default_backend()), **options)
         return cdf(function)
     return prepare_inner
