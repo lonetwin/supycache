@@ -19,7 +19,6 @@ class TestDictCache(unittest.TestCase):
         """Testing DictCache constructor"""
         self.assertTrue(hasattr(self.cache, 'set'))
         self.assertTrue(hasattr(self.cache, 'get'))
-        self.assertTrue(hasattr(self.cache, 'connect'))
         self.assertTrue(hasattr(self.cache, 'clear'))
 
     def test_methods(self):
@@ -30,6 +29,18 @@ class TestDictCache(unittest.TestCase):
         self.assertTrue(self.cache.clear() == None)
         self.assertTrue(len(self.cache._data) == 0)
 
+
+def test_get_set_default_backend():
+    """Testing get/set default_backend"""
+    reload(supycache) # - re-init
+    from supycache.backends import DictCache
+    assert(supycache.default_backend == None)
+    assert(isinstance(supycache.get_default_backend(), DictCache))
+    assert(isinstance(supycache.default_backend, DictCache))
+    new_backend = DictCache()
+    supycache.set_default_backend(new_backend)
+    assert(supycache.get_default_backend() is new_backend)
+    assert(supycache.default_backend is new_backend)
 
 class TestCacheDecorators(unittest.TestCase):
     """ Test the CacheDecorators
@@ -59,30 +70,36 @@ class TestCacheDecorators(unittest.TestCase):
         """
         from supycache.backends import DictCache
 
+        class TestException(Exception):
+            pass
+
         class DummyBackend:
-            def set(self, key, result):
-                raise Exception
+            def raise_exc(self, *args):
+                """dummy function to raise exception, used later"""
+                raise TestException()
 
-        supycache.default_backend = DummyBackend() # override setUp()
+        backend = DummyBackend()
+        supycache.set_default_backend(backend) # override setUp()
+
         @supycache.supycache(cache_key='simple_key', ignore_errors=False)
-        def simple_setter():
+        def simple_function():
             return 'simple_value'
 
-        @supycache.supycache(expire_key='simple_key', ignore_errors=False)
-        def simple_deleter():
-            return 'simple_value'
+        # - test exception in get() with ignore_errors=False
+        with self.assertRaises(TestException) as context:
+            backend.get = backend.raise_exc
+            simple_function()
 
-        with self.assertRaises(AttributeError) as context:
-            simple_setter()
+        # - test exception in set() with ignore_errors=False
+        with self.assertRaises(TestException) as context:
+            backend.get = lambda key: None
+            backend.set = backend.raise_exc
+            simple_function()
 
-        with self.assertRaises(AttributeError) as context:
-            simple_deleter()
-
-        self.assertTrue("has no attribute" in
-                context.exception.message, context.exception.message)
-
-        with self.assertRaises(Exception) as context:
-            simple_setter()
+        # - test exception in delete() with ignore_errors=False
+        with self.assertRaises(TestException) as context:
+            backend.delete = backend.raise_exc
+            simple_function()
 
 
     def test_decorator_for_cache_key_cache_miss(self):
