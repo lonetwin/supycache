@@ -4,6 +4,6 @@ import pylibmc
 
 from .base import BaseCache
 
-class MemcachedCache(BaseCache):
-    pass
+class MemcachedCache(pylibmc.Client, BaseCache):
 
+    clear = pylibmc.Client.flush_all
