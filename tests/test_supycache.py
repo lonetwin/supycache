@@ -4,6 +4,32 @@
 import unittest
 import supycache
 
+class TestDictCache(unittest.TestCase):
+    """ Test the DictCache backend
+    """
+
+    def setUp(self):
+        from supycache.backends import DictCache
+        self.cache = DictCache()
+
+    def tearDown(self):
+        self.cache.clear()
+
+    def test_init(self):
+        """Testing DictCache constructor"""
+        self.assertTrue(hasattr(self.cache, 'set'))
+        self.assertTrue(hasattr(self.cache, 'get'))
+        self.assertTrue(hasattr(self.cache, 'clear'))
+
+    def test_methods(self):
+        """Testing DictCache methods"""
+        self.cache.set('key', 'value')
+        self.assertTrue(self.cache.get('key') == 'value')
+        self.assertTrue(bool(self.cache.get('non-existent')) == False)
+        self.assertTrue(self.cache.clear() == None)
+        self.assertTrue(len(self.cache._data) == 0)
+
+
 def test_get_set_default_backend():
     """Testing get/set default_backend"""
     reload(supycache) # - re-init
@@ -71,10 +97,6 @@ class TestCacheDecorators(unittest.TestCase):
             simple_function()
 
         # - test exception in delete() with ignore_errors=False
-        @supycache.supycache(expire_key='simple_key', ignore_errors=False)
-        def simple_function():
-            return 'simple_value'
-
         with self.assertRaises(TestException) as context:
             backend.delete = backend.raise_exc
             simple_function()

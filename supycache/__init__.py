@@ -60,7 +60,6 @@ def supycache(**options):
     - `ignore_errors` : A boolean to indicate whether errors in getting,
         setting or expiring cache should be ignored or re-raised on being
         caught.
-
     """
     def prepare_inner(function):
         recognized_options = {'backend',
