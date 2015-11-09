@@ -9,7 +9,7 @@ https://supycache.readthedocs.org/en/latest/
 
 __author__ = "Steven Fernandez <steve@lonetwin.net>"
 __license__ = "MIT"
-__version__ = '0.2.0'
+__version__ = '0.2.1'
 
 from functools import wraps
 
@@ -21,7 +21,7 @@ default_backend = None
 def get_default_backend():
     """Returns the currently configured `default_backend`.
 
-    The `default_backend` is a `supycache.DictCache` instance if not set. Use
+    If not set, the `default_backend` is a `supycache.DictCache` instance. Use
     `supycache.set_default_backend` to change this. A `backend` is any
     (caching) object that has at least the `.get()`, `.set()` and `.delete()`
     methods.
@@ -44,6 +44,9 @@ def supycache(**options):
     This is the primary interface to use `supycache`. This decorator accepts
     the following parameters:
 
+    - `backend` : The `backend` cache store to use for this cache key, if it is
+        different than `supycache.default_backend`.
+
     - `cache_key` : Either a simple string, a format string or callable used to
         create the key used for caching the result of the function being
         decorated. This key will be resolved at run-time and would be evaluated
@@ -57,9 +60,11 @@ def supycache(**options):
     - `ignore_errors` : A boolean to indicate whether errors in getting,
         setting or expiring cache should be ignored or re-raised on being
         caught.
+
     """
     def prepare_inner(function):
-        recognized_options = {'cache_key',
+        recognized_options = {'backend',
+                              'cache_key',
                               'expire_key',
                               'ignore_errors',
                              }
