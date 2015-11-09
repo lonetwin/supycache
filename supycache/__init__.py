@@ -9,7 +9,7 @@ https://supycache.readthedocs.org/en/latest/
 
 __author__ = "Steven Fernandez <steve@lonetwin.net>"
 __license__ = "MIT"
-__version__ = '0.2.0'
+__version__ = '0.2.1'
 
 from functools import wraps
 
@@ -60,6 +60,7 @@ def supycache(**options):
     - `ignore_errors` : A boolean to indicate whether errors in getting,
         setting or expiring cache should be ignored or re-raised on being
         caught.
+
     """
     def prepare_inner(function):
         recognized_options = {'backend',
