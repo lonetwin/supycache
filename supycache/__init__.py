@@ -62,17 +62,19 @@ def supycache(**options):
         caught.
 
     """
+    recognized_options = {'backend',
+                          'cache_key',
+                          'expire_key',
+                          'ignore_errors',
+                          }
+
+    if recognized_options.isdisjoint(options):
+        raise KeyError('expecting one of %s as an argument' %
+                       ', '.join(recognized_options))
+
+    backend = options.pop('backend', get_default_backend())
+
     def prepare_inner(function):
-        recognized_options = {'backend',
-                              'cache_key',
-                              'expire_key',
-                              'ignore_errors',
-                             }
-
-        if recognized_options.isdisjoint(options):
-            raise KeyError('expecting one of %s as an argument' % \
-                ','.join(recognized_options))
-
-        cdf = CacheDecoratorFactory(options.get('backend', get_default_backend()), **options)
+        cdf = CacheDecoratorFactory(backend, **options)
         return cdf(function)
     return prepare_inner
