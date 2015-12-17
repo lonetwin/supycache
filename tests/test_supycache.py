@@ -74,6 +74,8 @@ class TestCacheDecorators(unittest.TestCase):
             pass
 
         class DummyBackend:
+            config = {}
+
             def raise_exc(self, *args):
                 """dummy function to raise exception, used later"""
                 raise TestException()

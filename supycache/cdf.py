@@ -7,7 +7,7 @@ class CacheDecoratorFactory:
 
     def __init__(self, backend, cache_key='', expire_key='', **other_kwargs):
         self._backend = backend
-        self._options = other_kwargs
+        self._backend.config.update(other_kwargs)
 
         if cache_key:
             self.key = cache_key
