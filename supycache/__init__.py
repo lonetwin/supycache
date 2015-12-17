@@ -11,12 +11,11 @@ __author__ = "Steven Fernandez <steve@lonetwin.net>"
 __license__ = "MIT"
 __version__ = '0.2.1'
 
-from functools import wraps
-
 from .backends import DictCache
 from .cdf import CacheDecoratorFactory
 
 default_backend = None
+
 
 def get_default_backend():
     """Returns the currently configured `default_backend`.
@@ -30,6 +29,7 @@ def get_default_backend():
     if not default_backend:
         default_backend = DictCache()
     return default_backend
+
 
 def set_default_backend(backend):
     """Sets the `default_backend`.
@@ -62,17 +62,19 @@ def supycache(**options):
         caught.
 
     """
+    recognized_options = {'backend',
+                          'cache_key',
+                          'expire_key',
+                          'ignore_errors',
+                          }
+
+    if recognized_options.isdisjoint(options):
+        raise KeyError('expecting one of %s as an argument' %
+                       ', '.join(recognized_options))
+
+    backend = options.pop('backend', get_default_backend())
+
     def prepare_inner(function):
-        recognized_options = {'backend',
-                              'cache_key',
-                              'expire_key',
-                              'ignore_errors',
-                             }
-
-        if recognized_options.isdisjoint(options):
-            raise KeyError('expecting one of %s as an argument' % \
-                ','.join(recognized_options))
-
-        cdf = CacheDecoratorFactory(options.get('backend', get_default_backend()), **options)
+        cdf = CacheDecoratorFactory(backend, **options)
         return cdf(function)
     return prepare_inner
