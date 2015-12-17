@@ -2,7 +2,9 @@
 # -*- coding: utf-8 -*-
 from functools import wraps
 
+
 class CacheDecoratorFactory:
+
     def __init__(self, backend, cache_key='', expire_key='', **other_kwargs):
         self._backend = backend
         self._options = other_kwargs
@@ -23,7 +25,8 @@ class CacheDecoratorFactory:
     def _expiry_wrapper(self, func):
         @wraps(func)
         def cache_deleter(*args, **kwargs):
-            key = self.key(*args, **kwargs) if callable(self.key) else self.key.format(*args, **kwargs)
+            key = self.key(*args, **kwargs) if callable(self.key) \
+                else self.key.format(*args, **kwargs)
             try:
                 self._backend.delete(key)
             except:
@@ -37,7 +40,8 @@ class CacheDecoratorFactory:
         @wraps(func)
         def cache_setter(*args, **kwargs):
             result = None
-            key = self.key(*args, **kwargs) if callable(self.key) else self.key.format(*args, **kwargs)
+            key = self.key(*args, **kwargs) if callable(self.key) \
+                else self.key.format(*args, **kwargs)
             try:
                 result = self._backend.get(key)
             except:

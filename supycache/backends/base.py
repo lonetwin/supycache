@@ -1,7 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-class BaseCache(object): # pragma: no cover
+
+class BaseCache(object):  # pragma: no cover
+
     def __init__(self, config=None):
         self.config = config
 
@@ -16,4 +18,3 @@ class BaseCache(object): # pragma: no cover
 
     def clear(self):
         raise NotImplementedError()
-
