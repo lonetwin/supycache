@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 import warnings
 from .dict_cache import DictCache
-from .dict_cache import ExpiringDictCache
 
 try:
     from .memcached import MemcachedCache
