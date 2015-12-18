@@ -9,7 +9,7 @@ https://supycache.readthedocs.org/en/latest/
 
 __author__ = "Steven Fernandez <steve@lonetwin.net>"
 __license__ = "MIT"
-__version__ = '0.2.1'
+__version__ = '0.3.0'
 
 from .backends import DictCache
 from .cdf import CacheDecoratorFactory
