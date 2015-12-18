@@ -10,18 +10,21 @@ Install using pip: ``pip install supycache`` or download from https://pypi.pytho
 What is supycache ?
 -------------------
 
-``supycache`` is a decorator that enables caching of return values of
+``supycache`` is a decorator that enables caching of return values for
 time-consuming functions, either in memory or on a cache server such as
 `memcached <http://memcached.org/>`_ or `redis <http://redis.io/>`_.
 
 The cache keys can either be *indedependent* or dependent (completely or
-*partially*) of the arguments passed to the function.
+*partially*) on the arguments passed to the function.
 
 This is **different** from other similar caching decorators, for
 instance,
 `functools.lru_cache <https://docs.python.org/3/library/functools.html#functools.lru_cache>`_
 which is dependent on all the arguments passed to the function and
 requires the arguments to be hashable.
+
+If you use the default cache backend (ie: `supycache.backends.DictCache`), you
+can also provide an age for the cached values
 
 Here's an example of how you might use ``supycache``
 
@@ -30,19 +33,28 @@ Here's an example of how you might use ``supycache``
     import time
     import supycache
 
-    @supycache.supycache(cache_key='result')
+    @supycache.supycache(cache_key='result', max_age=5)
     def execute_expensive():
+        print 'original function called'
         time.sleep(15)
         return 42
 
     print execute_expensive()  # This will take 15 seconds to execute ...
+    original function called
     42
     print execute_expensive()  # ...not this tho', because the value is cached ...
     42
     print supycache.default_backend.get('result') # ..keyed as `result`
     42
+    time.sleep(5)              # wait for the cache to expire...
+    execute_expensive()        # This will again take 15 seconds to execute ...
+    original function called
+    42
+    print execute_expensive()  # ...not this tho', because the value is re-cached ...
+    42
 
-However, you might want to be aware of the arguments that are passed to
+
+Sometimes you might want to be aware of the arguments that are passed to
 the function:
 
 .. code:: python
@@ -51,6 +63,11 @@ the function:
     @supycache(cache_key='sum_of_{0}_and_{1}')   # Cache the sum of x and y creating a
     def cached_sum(x, y):                        # key based on the arguments passed
         return x + y
+
+    print cached_sum(28, 14)
+    42
+    print supycache.default_backend.get('sum_of_28_and_14')
+    42
 
 You can also create the key based on **partial arguments** or on the
 ``attributes``/``items`` within the arguments.
@@ -139,26 +156,27 @@ However, if you'd like to have more control on the way the
 The ``backend`` interface is abstarcted out neatly so that backends can be
 swapped out without too much hassle. As long as the passed in object has a
 ``get()``, ``set()`` and ``delete()`` methods, it can be passed to
-``supycache`` as a backend or can be set as the ``default_backend``
+``supycache`` as a backend or can be set as the ``default_backend``.
 
 
 Right now though, this project has only the code and tests, no docs
-(barring a couple of docstrings !). I'll be adding them soon. If
-interested take a look at the tests to see the typical usage and try it
-out. Feedback, bug reports and pull requests would be great !
+(barring some docstrings !). I'll be adding them soon. If interested take a
+look at the tests to see the typical usage and try it out. Feedback, bug
+reports and pull requests would be great !
 
 Help required
 -------------
 
-I would really appreciate any help you could offer in validating the packaging
-and distribution of this module via pypi since I've not distributed any
-packages before.
+I would really appreciate any help you could offer, not just in implementation
+but also in validating the packaging and distribution of this module via pypi
+since I've not distributed any packages before.
 
 Besides that I plan on adding a few more things:
 
-    * Ability to specify a ``max_age`` for the cache key.
-    * I'm not sure not the packaging for the dependency would work, but I'd
-      like to automatically include the support for ``memcached`` or ``redis``
-      backends if the python memcached or redis modules are installed.
+    * Ability to specify a ``max_age`` for all backends.
+    * I'm not sure whether I am doing the right thing for the not the packaging
+      of the memcached dependency. I'd like to automatically include the
+      support for ``memcached`` or ``redis`` backends if the python memcached
+      or redis modules are installed.
     * logging support
 

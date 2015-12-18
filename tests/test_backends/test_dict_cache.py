@@ -9,8 +9,7 @@ class TestDictCache(unittest.TestCase):
     """
 
     def setUp(self):
-        from supycache.backends import DictCache
-        self.cache = DictCache()
+        self.cache = supycache.backends.DictCache()
         supycache.set_default_backend(self.cache)
 
     def tearDown(self):
@@ -28,27 +27,30 @@ class TestDictCache(unittest.TestCase):
         self.assertTrue(self.cache.get('key') == 'value')
         self.assertTrue(bool(self.cache.get('non-existent')) == False)
         self.assertTrue(self.cache.clear() == None)
-        self.assertTrue(len(self.cache._data) == 0)
+        self.assertTrue(len(self.cache.data) == 0)
 
 
 class TestExpiringDictCache(unittest.TestCase):
-    """ Test the ExpiringDictCache backend
+    """ Test the DictCache backend with max_age parameter
     """
 
     def setUp(self):
-        from supycache.backends import ExpiringDictCache
-        self.cache = ExpiringDictCache()
+        self.cache = supycache.backends.DictCache()
         supycache.set_default_backend(self.cache)
 
     def tearDown(self):
         self.cache.clear()
 
     def test_init(self):
-        """Testing ExpiringDictCache constructor"""
-        self.assertTrue(self.cache._data['DoesNotExist'] == ('', 0))
+        """Testing expiring DictCache constructor"""
+        @supycache.supycache(cache_key='simple_key', ignore_errors=False, max_age=10)
+        def simple_function():
+            return 'simple_value'
+
+        self.assertTrue(self.cache.data['DoesNotExist'] == ('', 0))
 
     def test_get_without_ignoring_errors(self):
-        """Testing ExpiringDictCache get() method"""
+        """Testing expiring DictCache get() method without ignoring errors"""
 
         @supycache.supycache(cache_key='simple_key', ignore_errors=False, max_age=10)
         def simple_function():
@@ -59,7 +61,7 @@ class TestExpiringDictCache(unittest.TestCase):
 
 
     def test_get_with_ignoring_errors(self):
-        """Testing ExpiringDictCache get() method"""
+        """Testing expiring DictCache get() method with ignoring errors"""
 
         @supycache.supycache(cache_key='simple_key', max_age=10)
         def simple_function():
@@ -67,4 +69,4 @@ class TestExpiringDictCache(unittest.TestCase):
 
         self.assertTrue(simple_function() == 'simple_value')
         self.assertTrue(self.cache.get('simple_key') == 'simple_value')
-        self.assertTrue(self.cache._data['simple_key'][1] != 0)
+        self.assertTrue(self.cache.data['simple_key'][1] != 0)
