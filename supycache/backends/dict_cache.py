@@ -1,11 +1,17 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 import time
+
 from collections import defaultdict
+
 from .base import BaseCache
 
 
 class DictCache(BaseCache):
+    """A dictionary cache implementation for use with supycache
+
+    Recognizes config parameter `max_age`
+    """
 
     def __init__(self, config=None):
         super(DictCache, self).__init__(config)
@@ -24,9 +30,8 @@ class DictCache(BaseCache):
             if time.time() > expiry_time:
                 self.delete(key)
                 raise KeyError(key)
-        else:
-            value = self.data[key]
-        return value
+            return value
+        return self.data[key]
 
     def set(self, key, value):
         max_age = self.config.get('max_age')

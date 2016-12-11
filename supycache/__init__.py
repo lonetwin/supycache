@@ -41,8 +41,8 @@ def set_default_backend(backend):
 def supycache(**options):
     """Decorates a function for caching/expiring cache depending on arguments.
 
-    This is the primary interface to use `supycache`. This decorator accepts
-    the following parameters:
+    This is the primary interface to use `supycache`. This decorator expects
+    at least one of the following parameters:
 
     - `backend` : The `backend` cache store to use for this cache key, if it is
         different than `supycache.default_backend`.
@@ -61,6 +61,9 @@ def supycache(**options):
         setting or expiring cache should be ignored or re-raised on being
         caught.
 
+    Any additional parameters passed to this decorator are assumed to be config
+    options for the backend and are assigned to the `.config` attribute of the
+    backend instance.
     """
     recognized_options = {'backend',
                           'cache_key',

@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 import warnings
 from .dict_cache import DictCache
+from .lru_dict_cache import LRUCache
 
 try:
     from .memcached import MemcachedCache

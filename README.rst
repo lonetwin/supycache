@@ -173,10 +173,22 @@ since I've not distributed any packages before.
 
 Besides that I plan on adding a few more things:
 
-    * Ability to specify a ``max_age`` for all backends.
-    * I'm not sure whether I am doing the right thing for the not the packaging
-      of the memcached dependency. I'd like to automatically include the
-      support for ``memcached`` or ``redis`` backends if the python memcached
-      or redis modules are installed.
-    * logging support
+High priority:
+
+  * Add logging support
+  * Python 3 compatibility
+  * Refactoring how we deal with config parameters for individual backends
+  * Tests for LRUCache
+  * Tests to confirm cache is actually useful, using different backends
+
+Medium priority:
+
+  * Documentation
+
+Low priority:
+  * Ability to specify a ``max_age`` for all backends.
+  * I'm not sure whether I am doing the right thing for the not the packaging of
+    the memcached dependency. I'd like to automatically include the support for
+    ``memcached`` or ``redis`` backends if the python memcached or redis modules
+    are installed.
 
