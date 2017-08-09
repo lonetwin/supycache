@@ -14,7 +14,7 @@ What is supycache ?
 time-consuming functions, either in memory or on a cache server such as
 `memcached <http://memcached.org/>`_ or `redis <http://redis.io/>`_.
 
-The cache keys can either be *indedependent* or dependent (completely or
+The cache keys can either be *independent* or dependent (completely or
 *partially*) on the arguments passed to the function.
 
 This is **different** from other similar caching decorators, for
@@ -135,7 +135,7 @@ However, if you'd like to have more control on the way the
 
 .. code:: python
 
-    def extract_path(url=None, *args, **kwags):
+    def extract_path(url=None, *args, **kwargs):
         return urlparse.urlparse(url).path
 
     @supycache(cache_key=extract_path, ignore_errors=False)
@@ -153,7 +153,7 @@ However, if you'd like to have more control on the way the
     'cached'
 
 
-The ``backend`` interface is abstarcted out neatly so that backends can be
+The ``backend`` interface is abstracted out neatly so that backends can be
 swapped out without too much hassle. As long as the passed in object has a
 ``get()``, ``set()`` and ``delete()`` methods, it can be passed to
 ``supycache`` as a backend or can be set as the ``default_backend``.
